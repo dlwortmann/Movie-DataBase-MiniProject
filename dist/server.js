@@ -12,9 +12,9 @@ app.get('/api/movies', (_req, res) => {
             if (err) {
                 console.log(err);
             }
-            else if (result) {
-                console.log("Movies table selected");
-                res.json(result);
+            else if (result.rows) {
+                console.log('Movies table selected');
+                res.json(result.rows);
             }
         });
     }
@@ -22,29 +22,50 @@ app.get('/api/movies', (_req, res) => {
         res.status(500).send('Error getting database');
     }
 });
-//const deletedRow = 2;
-// pool.query(
-//   `DELETE FROM favorite_books WHERE id = $1`,
-//   [deletedRow],
-//   (err: Error, result: QueryResult) => {
-//   if (err) {
-//     console.log(err);
-//   } else {
-//     console.log(`${result.rowCount} row(s) deleted!`);
-//   }
-// });
-// // Query database
-// pool.query('SELECT * FROM favorite_books', (err: Error, result: QueryResult) => {
-//   if (err) {
-//     console.log(err);
-//   } else if (result) {
-//     console.log(result.rows);
-//   }
-// });
-// // Default response for any other request (Not Found)
-// app.use((_req, res) => {
-//   res.status(404).end();
-// });
+app.get('/api/movie-reviews', (_req, res) => {
+    try {
+        pool.query(`SELECT * FROM reviews`, (err, result) => {
+            if (err) {
+                console.log(err);
+            }
+            else if (result) {
+                console.log("Movies table selected");
+                res.json(result.rows);
+            }
+        });
+    }
+    catch {
+        res.status(500).send('Error getting database');
+    }
+});
+app.post('/api/add-movie', (req, res) => {
+    try {
+        pool.query(`INSERT INTO movies (movie_name) VALUES ($1)`, [req.body.movie_name], (err, result) => {
+            if (err) {
+                console.log(err);
+            }
+            else if (result.rows) {
+                console.log("Success!");
+                res.status(200).send('Success');
+            }
+        });
+    }
+    catch {
+        res.status(500).send('Error adding movie');
+    }
+});
+app.delete('/api/movie/:id', (req, res) => {
+    const deletedRow = req.params.id;
+    pool.query(`DELETE FROM movies WHERE id = $1`, [deletedRow], (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            console.log(`${result.rowCount} row deleted.`);
+            res.status(204).json();
+        }
+    });
+});
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

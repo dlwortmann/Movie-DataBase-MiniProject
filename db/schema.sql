@@ -8,12 +8,12 @@ DROP TABLE IF EXISTS reviews;
 
 CREATE TABLE movies (
   id SERIAL PRIMARY KEY,
-  movie_name VARCHAR(100) NOT NULL
+  movie_name VARCHAR(100) UNIQUE NOT NULL
 );
 
 CREATE TABLE reviews (
-  id INTEGER,
-  movie_id INTEGER NOT NULL,
+  id SERIAL PRIMARY KEY,
+  movie_id INTEGER,
   review TEXT NOT NULL,
   FOREIGN KEY (movie_id)
   REFERENCES movies(id)
